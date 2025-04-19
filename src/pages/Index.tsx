@@ -5,6 +5,7 @@ import { LanguageSelector } from "@/components/LanguageSelector"
 import { MealCard } from "@/components/MealCard"
 import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/sonner"
+import { getTranslatedFoodSuggestions } from "@/utils/translations"
 
 export default function Index() {
   const [bloodSugar, setBloodSugar] = useState("")
@@ -25,9 +26,10 @@ export default function Index() {
       
       // Different food suggestions based on blood sugar ranges
       let foodSuggestions = []
+      let toastMessage = ""
       
       if (bloodSugarLevel < 70) {
-        // Low blood sugar suggestions (quick sugar sources but still relatively healthy)
+        // Low blood sugar suggestions
         foodSuggestions = [
           {
             name: "Apple",
@@ -54,7 +56,7 @@ export default function Index() {
             type: 'vegetable' as const
           }
         ]
-        toast.success(`Suggestions for low blood sugar (${bloodSugarLevel} mg/dL)`)
+        toastMessage = `Suggestions for low blood sugar (${bloodSugarLevel} mg/dL)`
       } 
       else if (bloodSugarLevel >= 70 && bloodSugarLevel <= 140) {
         // Normal blood sugar range - balanced options
@@ -84,7 +86,7 @@ export default function Index() {
             type: 'fruit' as const
           }
         ]
-        toast.success(`Suggestions for normal blood sugar (${bloodSugarLevel} mg/dL)`)
+        toastMessage = `Suggestions for normal blood sugar (${bloodSugarLevel} mg/dL)`
       } 
       else {
         // High blood sugar - focus on foods that help lower blood sugar
@@ -114,10 +116,14 @@ export default function Index() {
             type: 'fruit' as const
           }
         ]
-        toast.success(`Suggestions for elevated blood sugar (${bloodSugarLevel} mg/dL)`)
+        toastMessage = `Suggestions for elevated blood sugar (${bloodSugarLevel} mg/dL)`
       }
       
-      setSuggestions(foodSuggestions)
+      // Translate food suggestions based on selected language
+      const translatedSuggestions = getTranslatedFoodSuggestions(foodSuggestions, language)
+      
+      setSuggestions(translatedSuggestions)
+      toast.success(toastMessage)
     } catch (error) {
       console.error("Error getting food suggestions:", error)
       toast.error("Could not generate food suggestions")
